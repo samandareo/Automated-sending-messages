@@ -194,14 +194,14 @@ async def send_twenty_hour():
             if username is not None:
                 try:
                     message_text = f"Assalomu alaykum, hurmatli {str(name)}!"
-                    await send_message_and_forward_book(username, message_text, -1002151076535, msg_id, name, user['phone_number'])
+                    await send_message_and_forward_book(username, message_text, -1002151076535, msg_id, responsible_id, name, user['phone_number'])
                 except Exception as e:
                     print(f"Error sending message to user ID {user['user_id']}: {e}")
             elif username is None and user_id is not None:
                 try:
                     user_id = int(user_id)
                     message_text = f"Assalomu alaykum, hurmatli {str(name)}!"
-                    await send_message_and_forward_book(user_id, message_text, -1002151076535, msg_id)
+                    await send_message_and_forward_book(user_id, message_text, -1002151076535, msg_id, respon_id=responsible_id, name=name, phone=user['phone_number'])
                 except Exception as e:
                     print(f"Error sending message to user ID {user['user_id']}: {e}")
             asyncio.sleep(2)
