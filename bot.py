@@ -107,7 +107,7 @@ async def add_contact(name, number, respon_id):
 async def send_message_and_forward_book(user_id, message_text, channel_id, message_id, respon_id,name,phone):
     try:
         client = clients.get(respon_id)
-        await client.send_message(entity=user_id, message_text=message_text)
+        await client.send_message(entity=user_id, message=message_text)
 
         await client.forward_messages(entity=user_id, messages=message_id, from_peer=channel_id, drop_author=True)
         
@@ -176,7 +176,7 @@ async def assign_task_to_operator():
 
 async def send_twenty_hour():
     try:
-        users = await fetch_query("SELECT u.name, u.phone_number, u.responsible_id, m.msg_link, ua.username, ua.user_id FROM users as u, messages as m, user_additions as ua WHERE u.phone_number = ua.phone_number AND u.cur_msg_id = m.msg_id AND is_qualitative = true")
+        users = await fetch_query("SELECT u.id, u.name, u.phone_number, u.responsible_id, m.msg_link, ua.username, ua.user_id FROM users as u, messages as m, user_additions as ua WHERE u.phone_number = ua.phone_number AND u.cur_msg_id = m.msg_id AND is_qualitative = true")
         pattern = r"https://t\.me/c/2151076535/(\d+)"
 
         for user in users:
@@ -204,14 +204,14 @@ async def send_twenty_hour():
                     await send_message_and_forward_book(user_id, message_text, -1002151076535, msg_id, respon_id=responsible_id, name=name, phone=user['phone_number'])
                 except Exception as e:
                     print(f"Error sending message to user ID {user['user_id']}: {e}")
-            asyncio.sleep(2)
+            await asyncio.sleep(2)
         
 
             current_time = datetime.now()
-            asyncio.sleep(1)
+            await asyncio.sleep(1)
             
             await execute_query('UPDATE users SET updated_at = $1, cur_msg_id = 2 WHERE id = $2', (current_time, user['id']))
-            asyncio.sleep(60)
+            await asyncio.sleep(60)
 
                     
     except Exception as e:
