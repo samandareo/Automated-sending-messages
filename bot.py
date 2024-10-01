@@ -31,10 +31,10 @@ async def initialize_clients():
 
 
 DATABASE_CONFIG = {
-    'host': "dpg-cqb3njo8fa8c73b0bn8g-a.frankfurt-postgres.render.com",
-    'database': "botdb_hc6i",
-    'user': "botdb_hc6i_user",
-    'password': "eP6HxjZuBxuevilm7qNVPhsK75cAWsbD",
+    'host': "hostname",
+    'database': "database-name",
+    'user': "username",
+    'password': "password",
     'port': "5432"
 }
 
@@ -114,7 +114,7 @@ async def send_message_and_forward_book(user_id, message_text, channel_id, messa
         print(f"Message and book forwarded to user")
         alert_msg = f"message sent to {name} ({phone}) 24h"
 
-        group = await client.get_entity(-4218215589)
+        group = await client.get_entity(-1111111) # replace with report group id
         await client.send_message(group, alert_msg)
     except Exception as e:
         print(f"Error sending message to user ID {user_id}: {e}")
@@ -177,7 +177,7 @@ async def assign_task_to_operator():
 async def send_twenty_hour():
     try:
         users = await fetch_query("SELECT u.id, u.name, u.phone_number, u.responsible_id, m.msg_link, ua.username, ua.user_id FROM users as u, messages as m, user_additions as ua WHERE u.phone_number = ua.phone_number AND u.cur_msg_id = m.msg_id AND is_qualitative = true")
-        pattern = r"https://t\.me/c/2151076535/(\d+)"
+        pattern = r"https://t\.me/c/1111111/(\d+)" # replace 111111 with channel id, this means, we save books in private channel.
 
         for user in users:
             name = user['name']
@@ -194,14 +194,14 @@ async def send_twenty_hour():
             if username is not None:
                 try:
                     message_text = f"Assalomu alaykum, hurmatli {str(name)}!"
-                    await send_message_and_forward_book(username, message_text, -1002151076535, msg_id, responsible_id, name, user['phone_number'])
+                    await send_message_and_forward_book(username, message_text, -100$11111111, msg_id, responsible_id, name, user['phone_number']) #replace $111111 with your channel that is save data
                 except Exception as e:
                     print(f"Error sending message to user ID {user['user_id']}: {e}")
             elif username is None and user_id is not None:
                 try:
                     user_id = int(user_id)
                     message_text = f"Assalomu alaykum, hurmatli {str(name)}!"
-                    await send_message_and_forward_book(user_id, message_text, -1002151076535, msg_id, respon_id=responsible_id, name=name, phone=user['phone_number'])
+                    await send_message_and_forward_book(user_id, message_text, -100$111111111, msg_id, respon_id=responsible_id, name=name, phone=user['phone_number'])
                 except Exception as e:
                     print(f"Error sending message to user ID {user['user_id']}: {e}")
             await asyncio.sleep(2)
@@ -226,7 +226,7 @@ async def send_books():
 
         if cnt_users > 0:
             rows = await fetch_query('SELECT u.id, u.phone_number, u.name, b.telegram_channel_msg_link , u.responsible_id FROM users as u, books as b WHERE u.book_id = b.book_id and u.sent = false;')
-            pattern = r"https://t\.me/c/2151076535/(\d+)"
+            pattern = r"https://t\.me/c/111111111/(\d+)"
 
             for row in rows:
                 print(row)
@@ -246,7 +246,7 @@ async def send_books():
                     await execute_query('UPDATE users SET is_qualitative = false WHERE id = $1', (row['id'],))
                     await execute_query('UPDATE users SET sent = true WHERE id = $1', (row['id'],))
                     client = clients.get(res_id)
-                    group = await client.get_entity(-4218215589)
+                    group = await client.get_entity(-111111111)
                     await client.send_message(group, f"I cannot add this user to contacts: {row['phone_number']} ({row['name']})")
                     continue
 
@@ -256,11 +256,11 @@ async def send_books():
                 await asyncio.sleep(1)
                 client = clients.get(res_id)
                 message_text = f"Assalomu alaykum {str(row['name'])}"
-                await send_message_and_forward_book(contact, message_text, -1002151076535, msg_id, res_id)
+                await send_message_and_forward_book(contact, message_text, -100$11111111, msg_id, res_id)
                 
                 alert_msg = f"Book sent to {row['name']} ({row['phone_number']})"
 
-                group = await client.get_entity(-4218215589)
+                group = await client.get_entity(-11111111) # replace 111111 with report group id, bot notice about process
                 await client.send_message(group, alert_msg)
                 
                 print(alert_msg)
@@ -271,7 +271,7 @@ async def send_books():
                 await asyncio.sleep(60)
         else:
             client = clients.get(res_id)
-            group = await client.get_entity(-4218215589)
+            group = await client.get_entity(-1111111111)  # replace 111111 with report group id, bot notice about processx
             await client.send_message(group, f"No users to send books to.")
     except Exception as e:
         print(f"Error adding contacts: {e}")
@@ -285,7 +285,7 @@ async def forward_messages_to_users():
         if int(count) > 0:
 
             rows = await fetch_query("SELECT u.id, u.phone_number, u.name, u.created_at, u.is_qualitative, u.cur_msg_id, u.updated_at, u.responsible_id, m.msg_link, ch.phone_num FROM users as u, messages as m, checked_users as ch WHERE u.cur_msg_id = m.msg_id and u.is_qualitative = true and u.phone_number != ch.phone_num;")
-            pattern = r"https://t\.me/c/2151076535/(\d+)"
+            pattern = r"https://t\.me/c/11111111/(\d+)" #replace 1111111 with channel_id where saving books or something
             current_time = datetime.now()
             print(current_time)
             for row in rows:
@@ -329,13 +329,13 @@ async def forward_messages_to_users():
                     elif contact['username'] is None and contact['user_id'] is None:
                         message_text = f"Assalomu alaykum, hurmatli {str(name)}!"
                         contact = await add_contact(str(name), str(phone_number))
-                        await send_message_and_forward_book(contact, message_text, -1002151076535, msg_id)
+                        await send_message_and_forward_book(contact, message_text, -100$1111111, msg_id) # $11111111 is channel id(take book from this private channel)
 
 
                     
                     alert_msg = f"message sent to {phone_number} ({name}) 24h"
 
-                    group = await client.get_entity(-4218215589)
+                    group = await client.get_entity(-4218215589) # report group id
                     await client.send_message(group, alert_msg)
                     
                     await execute_query('UPDATE users SET updated_at = $1, cur_msg_id = 2 WHERE id = $2', (current_time, row['id']))
